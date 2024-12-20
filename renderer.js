@@ -1,8 +1,8 @@
 const isElementText = (element) => typeof element === "string";
-const isFunctionalComponent = (element) => typeof element.type === "function";
+const isFunctionalComponent = (element) => element && typeof element.type === "function";
 
 const pasteElementPropsToNode = (element, node) => {
-	if (!element.props) {
+	if (!element || !element.props) {
 		return;
 	}
 
@@ -14,7 +14,7 @@ const pasteElementPropsToNode = (element, node) => {
 };
 
 const renderChildren = (element, node) => {
-	if (!element.props || !element.props.children) {
+	if (!element || !element.props || !element.props.children) {
 		return;
 	}
 
@@ -23,29 +23,28 @@ const renderChildren = (element, node) => {
 	});
 };
 
-const getNode = (element) => {
-	let node;
-
-	if (isElementText(element)) {
-		node = document.createTextNode(element);
-	} else if (isFunctionalComponent(element)) {
-		const component = element.type(element.props);
-		node = getNode(component);
-	} else {
-		node = document.createElement(element.type);
+const getElementAndNode = (element) => {
+	if (isFunctionalComponent(element)) {
+		element = element.type(element.props, element.props.children);
 	}
 
-	pasteElementPropsToNode(element, node);
+	if (isElementText(element)) {
+		return { element, node: document.createTextNode(element) };
+	}
 
-	return node;
+	return { element, node: document.createElement(element.type) };
 };
 
-const render = (element, container) => {
-	const node = getNode(element);
+const render = (elements, container) => {
+	elements = [].concat(elements);
+	elements.forEach((element) => {
+		const { element: newElement, node } = getElementAndNode(element);
 
-	renderChildren(element, node);
+		pasteElementPropsToNode(newElement, node);
+		renderChildren(newElement, node);
 
-	container.appendChild(node);
+		container.appendChild(node);
+	});
 };
 
 const renderer = {
