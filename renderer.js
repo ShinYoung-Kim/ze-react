@@ -1,27 +1,50 @@
 const isElementText = (element) => typeof element === "string";
+const isFunctionalComponent = (element) => typeof element.type === "function";
 
-const getNode = (element) => {
-	if (isElementText(element)) {
-		return document.createTextNode(element);
+const pasteElementPropsToNode = (element, node) => {
+	if (!element.props) {
+		return;
 	}
 
-	return document.createElement(element.type);
+	Object.keys(element.props)
+		.filter((key) => key !== "children")
+		.forEach((key) => {
+			node[key] = element.props[key];
+		});
+};
+
+const renderChildren = (element, node) => {
+	if (!element.props || !element.props.children) {
+		return;
+	}
+
+	element.props.children.forEach((child) => {
+		render(child, node);
+	});
+};
+
+const getNode = (element) => {
+	let node;
+
+	if (isElementText(element)) {
+		node = document.createTextNode(element);
+	} else if (isFunctionalComponent(element)) {
+		const component = element.type(element.props);
+		node = getNode(component);
+	} else {
+		node = document.createElement(element.type);
+	}
+
+	pasteElementPropsToNode(element, node);
+
+	return node;
 };
 
 const render = (element, container) => {
 	const node = getNode(element);
 
-	if (element.props) {
-		Object.keys(element.props)
-			.filter((key) => key !== "children")
-			.forEach((key) => {
-				node[key] = element.props[key];
-			});
-
-		element.props.children.forEach((child) => {
-			render(child, node);
-		});
-	}
+	pasteElementPropsToNode(element, node);
+	renderChildren(element, node);
 
 	container.appendChild(node);
 };

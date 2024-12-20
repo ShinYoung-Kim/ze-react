@@ -12,6 +12,31 @@
 		import renderer from "./renderer.js";
 		import core from "./core.js";
 
-		renderer.render(core.createElement("h1", null, "Hello, ze-react!"), document.getElementById("app"));
+		renderer.render(
+			core.createElement(
+				"h1",
+				{
+					style: "color: red; font-size: 20px;",
+				},
+				"Hello, ze-react!"
+			),
+			document.getElementById("app")
+		);
+
+		const functionalComponent = (props, children) => {
+			return core.createElement(
+				"span",
+				{
+					style: "color: blue; font-size: 16px;",
+					...props,
+				},
+				children
+			);
+		};
+
+		renderer.render(
+			core.createElement(functionalComponent, null, "Welcome!"),
+			document.getElementById("app")
+		);
 	</script>
 </html>
