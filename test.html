@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>ze-react test</title>
+	</head>
+	<body>
+		<div id="app"></div>
+	</body>
+	<script type="module">
+		import renderer from "./renderer.js";
+		import core from "./core.js";
+
+		renderer.render(core.createElement("h1", null, "Hello, ze-react!"), document.getElementById("app"));
+	</script>
+</html>
