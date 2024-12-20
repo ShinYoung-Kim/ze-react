@@ -23,22 +23,27 @@ const renderChildren = (element, node) => {
 	});
 };
 
-const getElementAndNode = (element) => {
+const getElement = (element) => {
 	if (isFunctionalComponent(element)) {
 		element = element.type(element.props, element.props.children);
 	}
 
+	return element;
+};
+
+const getNode = (element) => {
 	if (isElementText(element)) {
-		return { element, node: document.createTextNode(element) };
+		return document.createTextNode(element);
 	}
 
-	return { element, node: document.createElement(element.type) };
+	return document.createElement(element.type);
 };
 
 const render = (elements, container) => {
 	elements = [].concat(elements);
 	elements.forEach((element) => {
-		const { element: newElement, node } = getElementAndNode(element);
+		const newElement = getElement(element);
+		const node = getNode(newElement);
 
 		pasteElementPropsToNode(newElement, node);
 		renderChildren(newElement, node);
