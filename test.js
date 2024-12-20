@@ -31,10 +31,14 @@ export const createNestedFunctionalElement = () =>
 	renderer.render(
 		core.createElement(
 			functionalComponent,
-			{
-				style: "color: green; font-size: 12px;",
-			},
-			core.createElement(functionalComponent, null, "hihi")
+			null,
+			core.createElement(
+				functionalComponent,
+				{
+					style: "color: green; font-size: 12px;",
+				},
+				"hihi"
+			)
 		),
 		document.getElementById("app")
 	);
