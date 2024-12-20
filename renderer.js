@@ -43,7 +43,6 @@ const getNode = (element) => {
 const render = (element, container) => {
 	const node = getNode(element);
 
-	pasteElementPropsToNode(element, node);
 	renderChildren(element, node);
 
 	container.appendChild(node);
