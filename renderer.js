@@ -1,3 +1,5 @@
+import { nextUnitOfWork } from "./scheduler";
+
 const isElementText = (element) => typeof element === "string";
 const isFunctionalComponent = (element) => element && typeof element.type === "function";
 
@@ -40,13 +42,21 @@ const getNode = (element) => {
 };
 
 const render = (element, container) => {
+	nextUnitOfWork = {
+		dom: container,
+		props: {
+			children: [element],
+		},
+	};
+};
+
+export const createDom = (fiber) => {
 	const newElement = getElement(element);
-	const node = getNode(newElement);
+	const dom = getNode(newElement);
 
-	pasteElementPropsToNode(newElement, node);
-	renderChildren(newElement, node);
+	pasteElementPropsToNode(newElement, dom);
 
-	container.appendChild(node);
+	return dom;
 };
 
 const renderer = {
