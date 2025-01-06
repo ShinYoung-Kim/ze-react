@@ -1,4 +1,4 @@
-import { nextUnitOfWork } from "./scheduler";
+import { wipRoot, nextUnitOfWork, currentRoot } from "./scheduler";
 
 const isElementText = (element) => typeof element === "string";
 const isFunctionalComponent = (element) => element && typeof element.type === "function";
@@ -42,12 +42,15 @@ const getNode = (element) => {
 };
 
 const render = (element, container) => {
-	nextUnitOfWork = {
+	wipRoot = {
 		dom: container,
 		props: {
 			children: [element],
 		},
+		alternate: currentRoot,
 	};
+
+	nextUnitOfWork = wipRoot;
 };
 
 export const createDom = (fiber) => {
