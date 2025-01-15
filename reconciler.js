@@ -85,6 +85,14 @@ export const commitRoot = () => {
 	wipRoot = null;
 };
 
+const commitDeletion = (fiber, parentDom) => {
+	if (fiber.dom) {
+		parentDom.removeChild(fiber.dom);
+	} else {
+		commitDeletion(fiber.child, parentDom);
+	}
+};
+
 export const commitWork = (fiber) => {
 	if (!fiber) {
 		return;
@@ -101,7 +109,7 @@ export const commitWork = (fiber) => {
 	} else if (fiber.effectTag === "PLACEMENT" && fiber.dom) {
 		parentDom.appendChild(fiber.dom);
 	} else if (fiber.effectTag === "DELETION") {
-		parentDom.removeChild(fiber.dom);
+		commitDeletion(fiber, parentDom);
 	}
 
 	commitWork(fiber.child);
