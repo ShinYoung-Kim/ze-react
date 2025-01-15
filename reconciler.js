@@ -45,6 +45,17 @@ const reconcileChildren = (wipFiber, elements) => {
 				effectTag: "UPDATE",
 			};
 		}
+
+		if (element && !sameType) {
+			newFiber = {
+				type: element.type,
+				props: element.props,
+				dom: null,
+				parent: wipFiber,
+				alternate: null,
+				effectTag: "PLACEMENT",
+			};
+		}
 	}
 };
 
@@ -62,6 +73,8 @@ export const commitWork = (fiber) => {
 	const parentDom = fiber.parent.dom;
 	if (fiber.effectTag === "UPDATE" && fiber.dom) {
 		updateDom(fiber.dom, fiber.alternate.props, fiber.props);
+	} else if (fiber.effectTag === "PLACEMENT" && fiber.dom) {
+		parentDom.appendChild(fiber.dom);
 	}
 
 	commitWork(fiber.child);
