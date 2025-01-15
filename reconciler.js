@@ -24,7 +24,10 @@ export const performUnitOfWork = (fiber) => {
 	}
 };
 
-const updateFunctionComponent = (fiber) => {};
+const updateFunctionComponent = (fiber) => {
+	const children = [fiber.type(fiber.props)];
+	reconcileChildren(fiber, children);
+};
 
 const updateHostComponent = (fiber) => {
 	if (!fiber.dom) {
