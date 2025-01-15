@@ -1,3 +1,4 @@
+import { updateDom } from "./reconciler";
 import { wipRoot, nextUnitOfWork, currentRoot, deletions } from "./scheduler";
 
 const isElementText = (element) => typeof element === "string";
@@ -55,10 +56,10 @@ const render = (element, container) => {
 };
 
 export const createDom = (fiber) => {
-	const newElement = getElement(element);
+	const newElement = getElement(fiber);
 	const dom = getNode(newElement);
 
-	pasteElementPropsToNode(newElement, dom);
+	updateDom(dom, {}, fiber.props);
 
 	return dom;
 };

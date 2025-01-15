@@ -88,3 +88,23 @@ export const commitWork = (fiber) => {
 	commitWork(fiber.child);
 	commitWork(fiber.sibling);
 };
+
+const isProperty = (key) => key !== "children";
+const isNew = (prev, next) => (key) => prev[key] !== next[key];
+const isGone = (_, next) => (key) => !(key in next);
+
+export const updateDom = (dom, prevProps, nextProps) => {
+	Object.keys(prevProps)
+		.filter(isProperty)
+		.filter(isGone(prevProps, nextProps))
+		.forEach((key) => {
+			dom[key] = "";
+		});
+
+	Object.keys(nextProps)
+		.filter(isProperty)
+		.filter(isNew(prevProps, nextProps))
+		.forEach((key) => {
+			dom[key] = nextProps[key];
+		});
+};
