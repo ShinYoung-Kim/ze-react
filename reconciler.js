@@ -90,7 +90,12 @@ export const commitWork = (fiber) => {
 		return;
 	}
 
-	const parentDom = fiber.parent.dom;
+	let parentFiber = fiber.parent;
+	while (!parentFiber.dom) {
+		parentFiber = parentFiber.parent;
+	}
+	const parentDom = parentFiber.dom;
+
 	if (fiber.effectTag === "UPDATE" && fiber.dom) {
 		updateDom(fiber.dom, fiber.alternate.props, fiber.props);
 	} else if (fiber.effectTag === "PLACEMENT" && fiber.dom) {
