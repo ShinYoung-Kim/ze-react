@@ -89,11 +89,20 @@ export const commitWork = (fiber) => {
 	commitWork(fiber.sibling);
 };
 
-const isProperty = (key) => key !== "children";
+const isEvent = (key) => key.startsWith("on");
+const isProperty = (key) => key !== "children" && !isEvent(key);
 const isNew = (prev, next) => (key) => prev[key] !== next[key];
 const isGone = (_, next) => (key) => !(key in next);
 
 export const updateDom = (dom, prevProps, nextProps) => {
+	Object.keys(prevProps)
+		.filter(isEvent)
+		.filter((key) => !(key in nextProps) || isNew(prevProps, nextProps)(key))
+		.forEach((key) => {
+			const eventType = key.toLowerCase().substring(2);
+			dom.removeEventListener(eventType, prevProps[key]);
+		});
+
 	Object.keys(prevProps)
 		.filter(isProperty)
 		.filter(isGone(prevProps, nextProps))
@@ -106,5 +115,13 @@ export const updateDom = (dom, prevProps, nextProps) => {
 		.filter(isNew(prevProps, nextProps))
 		.forEach((key) => {
 			dom[key] = nextProps[key];
+		});
+
+	Object.keys(nextProps)
+		.filter(isEvent)
+		.filter(isNew(prevProps, nextProps))
+		.forEach((key) => {
+			const eventType = key.toLowerCase().substring(2);
+			dom.addEventListener(eventType, nextProps[key]);
 		});
 };
