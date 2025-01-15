@@ -1,14 +1,14 @@
 import { createDom } from "./renderer.js";
 import { currentRoot, deletions, wipRoot } from "./scheduler.js";
 
-export const performUnitOfWork = (fiber) => {
-	if (!fiber.dom) {
-		fiber.dom = createDom(fiber);
-	}
+const isFunctionalComponent = (fiber) => typeof fiber.type instanceof Function;
 
-	// fiber 자식-형제 관계 설정
-	const elements = fiber.props.children;
-	reconcileChildren(fiber, elements);
+export const performUnitOfWork = (fiber) => {
+	if (isFunctionalComponent(fiber)) {
+		updateFunctionComponent(fiber);
+	} else {
+		updateHostComponent(fiber);
+	}
 
 	// 자식 -> 형제 -> 부모 순으로 탐색
 	if (fiber.child) {
@@ -22,6 +22,17 @@ export const performUnitOfWork = (fiber) => {
 		}
 		nextFiber = nextFiber.parent;
 	}
+};
+
+const updateFunctionComponent = (fiber) => {};
+
+const updateHostComponent = (fiber) => {
+	if (!fiber.dom) {
+		fiber.dom = createDom(fiber);
+	}
+
+	const elements = fiber.props.children;
+	reconcileChildren(fiber, elements);
 };
 
 const reconcileChildren = (wipFiber, elements) => {
