@@ -1,4 +1,4 @@
-import { wipRoot, nextUnitOfWork, currentRoot } from "./scheduler";
+import { wipRoot, nextUnitOfWork, currentRoot, deletions } from "./scheduler";
 
 const isElementText = (element) => typeof element === "string";
 const isFunctionalComponent = (element) => element && typeof element.type === "function";
@@ -50,6 +50,7 @@ const render = (element, container) => {
 		alternate: currentRoot,
 	};
 
+	deletions = [];
 	nextUnitOfWork = wipRoot;
 };
 

@@ -1,5 +1,5 @@
 import { createDom } from "./renderer.js";
-import { currentRoot, wipRoot } from "./scheduler.js";
+import { currentRoot, deletions, wipRoot } from "./scheduler.js";
 
 export const performUnitOfWork = (fiber) => {
 	if (!fiber.dom) {
@@ -56,10 +56,16 @@ const reconcileChildren = (wipFiber, elements) => {
 				effectTag: "PLACEMENT",
 			};
 		}
+
+		if (oldFiber && !sameType) {
+			oldFiber.effectTag = "DELETION";
+			deletions.push(oldFiber);
+		}
 	}
 };
 
 export const commitRoot = () => {
+	deletions.forEach(commitWork);
 	commitWork(wipRoot.child);
 	currentRoot = wipRoot;
 	wipRoot = null;
@@ -75,6 +81,8 @@ export const commitWork = (fiber) => {
 		updateDom(fiber.dom, fiber.alternate.props, fiber.props);
 	} else if (fiber.effectTag === "PLACEMENT" && fiber.dom) {
 		parentDom.appendChild(fiber.dom);
+	} else if (fiber.effectTag === "DELETION") {
+		parentDom.removeChild(fiber.dom);
 	}
 
 	commitWork(fiber.child);
